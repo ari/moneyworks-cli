@@ -39,7 +39,30 @@ Edit the mw.ini file to your needs. Set the IP address, password and so on. You'
     my_data = mw.export("name", "left(code, 1)=`A`")
     for contact in my_data:
       print contact['name']
+
+## Advanced usage
+
+Let's see how we might import some data, generate invoices, post them, print an invoice and email that
+
+    from moneyworks import Moneyworks
+    from moneyworks import Email
+
+    mw = Moneyworks()
+    e = Email()
+
+    # it is beyond the scope of this example on how to create the following variables
+    xml = ...some code to create the invoice structure...
+    name_code = ...the contact code in Moneyworks...
     
+    invoice_sequence = mw.create_transaction(xml)
+    result = mw.post_transaction(invoice_sequence)
+    pdf = mw.print_transaction('sequencenumber=`' + invoice_sequence + "`", 'my_invoice')
+
+    email = mw.get_email(name_code)
+    e.send_mail(email, "invoice", "Please send us some money.", pdf, "invoice.pdf")
+        
+        
+
 # License
 
 This library is licensed under the Apache Public License 2. Contributions and enhancements are welcome.
