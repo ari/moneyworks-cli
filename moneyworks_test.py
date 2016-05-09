@@ -1,5 +1,5 @@
 import unittest
-from moneyworks import Moneyworks
+from moneyworks import Moneyworks, Transaction
 from pprint import pprint
 
 
@@ -36,9 +36,15 @@ class TestMoneyworks(unittest.TestCase):
     def test_transaction(self):
         t = Transaction()
         t.add("type", "CP")
-        for data in [1, 2, 3, 4]:
+        t.add("type_num", 99.2)
+        for data in [1, 2]:
             l = t.add_line()
-            l.add("detail", data)
+            l.add("detail.something", "value1")
+            l.add("detail.something2", 2)
+
+        self.assertEquals('<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><type_num>99.2</type_num><type>CP</type><subfile name="Detail"><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something></detail><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something></detail></subfile></transaction></table>' \
+            , t.to_xml())
+
 
 if __name__ == '__main__':
     unittest.main()

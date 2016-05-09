@@ -133,7 +133,7 @@ class Transaction:
         self.lines = []
 
     def add(self, key, value):
-        self.properties[key] = value
+        self.properties[key] = str(value)
 
     def add_line(self):
         l = TransactionLine()
@@ -146,11 +146,12 @@ class Transaction:
         for key, value in self.properties.iteritems():
             SubElement(transaction, key).text = value
 
-        for line in self.lines:
+        if len(self.lines) > 0:
             subfile = SubElement(transaction, "subfile", {"name": "Detail"})
-            detail = SubElement(subfile, "detail")
-            for key, value in line.iteritems():
-                SubElement(detail, key).text = value
+            for line in self.lines:
+                detail = SubElement(subfile, "detail")
+                for key, value in line.properties.iteritems():
+                    SubElement(detail, key).text = value
 
         output = '<?xml version="1.0"?>' + tostring(xml)
         logging.info(output)
@@ -162,7 +163,7 @@ class TransactionLine:
         self.properties = {}
 
     def add(self, key, value):
-        self.properties[key] = value
+        self.properties[key] = str(value)
 
 
 class Email:
