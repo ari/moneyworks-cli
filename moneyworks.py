@@ -173,7 +173,7 @@ class TransactionLine:
     def __init__(self):
         self.properties = {}
 
-    def add(self, key, value):
+    def add(self, key, value=None):
         if value is None:
             self.properties[key] = None
         elif isinstance(value, date):
