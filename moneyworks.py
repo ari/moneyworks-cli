@@ -1,5 +1,5 @@
 #!/usr/local/bin/python2.7
-
+from datetime import date
 from requests.auth import HTTPBasicAuth
 import requests
 import urllib
@@ -132,8 +132,13 @@ class Transaction:
         self.properties = {}
         self.lines = []
 
-    def add(self, key, value):
-        self.properties[key] = str(value)
+    def add(self, key, value=None):
+        if value is None:
+            self.properties[key] = None
+        elif isinstance(value, date):
+            self.properties[key] = value.strftime("%Y%m%d")
+        else:
+            self.properties[key] = str(value)
 
     def add_line(self):
         l = TransactionLine()
@@ -163,7 +168,12 @@ class TransactionLine:
         self.properties = {}
 
     def add(self, key, value):
-        self.properties[key] = str(value)
+        if value is None:
+            self.properties[key] = None
+        elif isinstance(value, date):
+            self.properties[key] = value.strftime("%Y%m%d")
+        else:
+            self.properties[key] = str(value)
 
 
 class Email:
