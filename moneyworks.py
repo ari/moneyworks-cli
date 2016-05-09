@@ -149,14 +149,20 @@ class Transaction:
         xml = Element("table", {"name": "Transaction", "count": "1", "start": "0", "found": "1"})
         transaction = SubElement(xml, "transaction")
         for key, value in self.properties.iteritems():
-            SubElement(transaction, key).text = value
+            if value is None:
+                SubElement(transaction, key, {"work-it-out": "true"})
+            else:
+                SubElement(transaction, key).text = value
 
         if len(self.lines) > 0:
             subfile = SubElement(transaction, "subfile", {"name": "Detail"})
             for line in self.lines:
                 detail = SubElement(subfile, "detail")
                 for key, value in line.properties.iteritems():
-                    SubElement(detail, key).text = value
+                    if value is None:
+                        SubElement(detail, key, {"work-it-out": "true"})
+                    else:
+                        SubElement(detail, key).text = value
 
         output = '<?xml version="1.0"?>' + tostring(xml)
         logging.info(output)
