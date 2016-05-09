@@ -136,7 +136,7 @@ class Transaction:
         self.properties[key] = value
 
     def add_line(self):
-        l = TransactionLine
+        l = TransactionLine()
         self.lines.append(l)
         return l
 

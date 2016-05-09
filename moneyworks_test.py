@@ -33,6 +33,12 @@ class TestMoneyworks(unittest.TestCase):
         self.assertEquals(l[0]['email'], "accounts@acme.com.au")
         self.assertEquals(l[0]['name'], "ish")
 
+    def test_transaction(self):
+        t = Transaction()
+        t.add("type", "CP")
+        for data in [1, 2, 3, 4]:
+            l = t.add_line()
+            l.add("detail", data)
 
 if __name__ == '__main__':
     unittest.main()
