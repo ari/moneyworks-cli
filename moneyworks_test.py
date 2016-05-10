@@ -35,17 +35,18 @@ class TestMoneyworks(unittest.TestCase):
 
     def test_transaction(self):
         t = Transaction()
+        t.add("w")
         t.add("type", "CP")
         t.add("type_num", 99.2)
         t.add("d", date(2006, 6, 14))
-        t.add("w")
         for data in [1, 2]:
             l = t.add_line()
+            l.add("empty")
             l.add("detail.something", "value1")
             l.add("detail.something2", 2)
 
-        self.assertEquals('<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><type_num>99.2</type_num><type>CP</type><d>20060614</d><w work-it-out="true" /><subfile name="Detail"><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something></detail><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something></detail></subfile></transaction></table>' \
-            , t.to_xml())
+        self.assertEquals('<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><d>20060614</d><type_num>99.2</type_num><type>CP</type><w work-it-out="true" /><subfile name="Detail"><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail></subfile></transaction></table>' \
+            ,t.to_xml())
 
 
 if __name__ == '__main__':
