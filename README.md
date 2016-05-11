@@ -44,21 +44,36 @@ Edit the mw.ini file to your needs. Set the IP address, password and so on. You'
 
 Let's see how we might import some data, generate invoices, post them, print an invoice and email that
 
-    from moneyworks import Moneyworks
-    from moneyworks import Email
+    from moneyworks import Moneyworks, Transaction, Email
 
     mw = Moneyworks()
     e = Email()
 
-    # it is beyond the scope of this example on how to create the following variables
-    xml = ...some code to create the invoice structure...
-    name_code = ...the contact code in Moneyworks...
-    
-    invoice_sequence = mw.create_transaction(xml)
+    t = Transaction()
+    t.add("type", "DI")
+    t.add("theirref", "1234")
+    t.add("transdate", datetime.date.today().replace(day=1))  # First of the month
+    t.add("NameCode", "ACME")
+    t.add("description", "Monthly services")
+    t.add("tofrom", "Acme Pty Ltd")
+    t.add("duedate")
+    t.add("duedate")
+    t.add("contra")
+    t.add("ourref")
+
+    l = t.add_line()
+    l.add("detail.account", "4100")
+    l.add("detail.net", 1300.35)
+    l.add("detail.description", "Services")
+    l.add("detail.taxcode")
+    l.add("detail.tax")
+    l.add("detail.gross")
+
+    invoice_sequence = mw.create_transaction(t.to_xml())
     result = mw.post_transaction(invoice_sequence)
     pdf = mw.print_transaction('sequencenumber=`' + invoice_sequence + "`", 'my_invoice')
 
-    email = mw.get_email(name_code)
+    email = mw.get_email("ACME")
     e.send_mail(email, "invoice", "Please send us some money.", pdf, "invoice.pdf")
         
         
