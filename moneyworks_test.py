@@ -45,7 +45,7 @@ class TestMoneyworks(unittest.TestCase):
             l.add("detail.something", "value1")
             l.add("detail.something2", 2)
 
-        self.assertEquals('<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><d>20060614</d><type_num>99.2</type_num><type>CP</type><w work-it-out="true" /><subfile name="Detail"><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail></subfile></transaction></table>' \
+        self.assertEquals('<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><d>20060614</d><type_num>99.2</type_num><type>CP</type><w work-it-out="true" /><subfile name="Detail"><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail></subfile><gross work-it-out="true" /></transaction></table>' \
             ,t.to_xml())
 
 

@@ -164,6 +164,8 @@ class Transaction:
                     else:
                         SubElement(detail, key).text = value
 
+        # hardcode in gross to appear at the end since MW requires it
+        SubElement(transaction, "gross", {"work-it-out": "true"})
         output = '<?xml version="1.0"?>' + tostring(xml)
         logging.info(output)
         return output
