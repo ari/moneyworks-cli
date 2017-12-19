@@ -15,7 +15,9 @@ from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
 import configparser
 config = configparser.ConfigParser()
-config.read("mw.ini")
+config_data = config.read("mw.ini")
+if len(config_data) == 0:
+    raise ValueError, "Failed to open mw.ini configuration file."
 
 logging.basicConfig(format='%(message)s', level=logging.WARNING)
 
