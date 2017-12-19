@@ -2,7 +2,7 @@
 
 A python API for Cognito's Moneyworks accounting software
 
-A library for python 2.7 to make it easier to export, import and print data from Moneyworks. Some typical uses include:
+A library for python to make it easier to export, import and print data from Moneyworks. Some typical uses include:
 
 * Automatically creating invoices each month, posting them and emailing the pdf
 * Importing payroll data from Xero, creating super transactions, payroll and petty cash.
@@ -13,7 +13,7 @@ A library for python 2.7 to make it easier to export, import and print data from
 
 Cognito Moneyworks with an available REST user enabled on a port of your choice. We have only tested this library with Moneyworks Server, but it may work with the standalone version.
 
-You'll need python 2.7 or above. It hasn't been tested with python 3.x.
+You'll need python 2.7 or above.
 
 # Installing
 

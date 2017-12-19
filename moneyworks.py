@@ -1,8 +1,8 @@
-#!/usr/local/bin/python2.7
+#!/usr/local/bin/python3
+
 from datetime import date
-from requests.auth import HTTPBasicAuth
 import requests
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 
 from email.mime.application import MIMEApplication
@@ -13,8 +13,8 @@ import smtplib
 
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
-import ConfigParser
-config = ConfigParser.ConfigParser()
+import configparser
+config = configparser.ConfigParser()
 config.read("mw.ini")
 
 logging.basicConfig(format='%(message)s', level=logging.WARNING)
@@ -24,8 +24,8 @@ class Moneyworks:
 
     def __init__(self):
         self.base_url = "http://" + config.get('mw_server', 'HOST') + ":" + config.get('mw_server', 'PORT') + "/REST/"
-        self.url = self.base_url + urllib.quote_plus(config.get('mw_server', 'DATA_FILE')) + "/"
-        self.mw_auth = HTTPBasicAuth(config.get('mw_server', 'USERNAME'), config.get('mw_server', 'PASSWORD'))
+        self.url = self.base_url + urllib.parse.quote_plus(config.get('mw_server', 'DATA_FILE')) + "/"
+        self.mw_auth = requests.auth.HTTPBasicAuth(config.get('mw_server', 'USERNAME'), config.get('mw_server', 'PASSWORD'))
 
     def __get(self, path):
         r = requests.get(self.url + path, auth=self.mw_auth)
@@ -67,7 +67,7 @@ class Moneyworks:
         Get the email address from Moneyworks for a particular company
         :return email address string
         """
-        return self.__get("export/table=name&search=" + urllib.quote_plus("code=`" + company_code + "`") + "&format=[email]").text
+        return self.__get("export/table=name&search=" + urllib.parse.quote_plus("code=`" + company_code + "`") + "&format=[email]").text
 
     def print_transaction(self, search, form):
         """
@@ -76,7 +76,7 @@ class Moneyworks:
         :param form: the form to use when printing this record
         :return the pdf file as bytes
         """
-        r = self.__get("doform/form=" + form + "&search=" + urllib.quote_plus(search))
+        r = self.__get("doform/form=" + form + "&search=" + urllib.parse.quote_plus(search))
         logging.debug(r.headers)
         return r.content
 
@@ -95,7 +95,7 @@ class Moneyworks:
         :param search: A search string, eg. "DBalance>0"
         :return A list of records, each as a dict of record attributes
         """
-        path = "export/table=" + table + "&search=" + urllib.quote_plus(search) + "&format=xml-verbose"
+        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search) + "&format=xml-verbose"
         xml = self.__get(path).text
         logging.debug("XML retrieved " + xml)
 
@@ -116,12 +116,12 @@ class Moneyworks:
         :param format_string: a format for the returned data eg. "[code] [email] [DBalance]," or "xml"
         :param sort: an optional sort expression
         """
-        path = "export/table=" + table + "&search=" + urllib.quote_plus(search)
+        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search)
         if format_string:
-            path = path + "&format=" + urllib.quote_plus(format_string)
+            path = path + "&format=" + urllib.parse.quote_plus(format_string)
 
         if sort:
-            path = path + "&sort=" + urllib.quote_plus(sort)
+            path = path + "&sort=" + urllib.parse.quote_plus(sort)
 
         return self.__get(path).text
 
@@ -177,7 +177,7 @@ class Transaction:
         if the value is anything else it will be (False, x) (where x is the value). Since tuples are sorted item by item,
         this means that all non-None elements will come first (since False < True), and then be sorted by value.
         """
-        return sorted(properties.items(), key=lambda x: (x[1] is None, x[1]))
+        return sorted(list(properties.items()), key=lambda x: (x[1] is None, x[1]))
 
 
 class TransactionLine:
