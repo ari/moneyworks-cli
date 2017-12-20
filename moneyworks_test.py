@@ -1,14 +1,15 @@
 #!/usr/local/bin/python3
 
 import unittest
-from moneyworks import Moneyworks, Transaction
+from datetime import date
+import moneyworks
 from pprint import pprint
 
 
 class TestMoneyworks(unittest.TestCase):
 
     def setUp(self):
-        self.mw = Moneyworks()
+        self.mw = moneyworks.Moneyworks()
 
     def test_version(self):
         self.assertGreater(self.mw.version(), 6)
@@ -25,30 +26,36 @@ class TestMoneyworks(unittest.TestCase):
         self.assertIsInstance(pdf, bytes)
 
     def test_export(self):
-        l = self.mw.export("name", "left(code, 3)=`ISH`")
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 2)
+        data = self.mw.export("name", "left(code, 3)=`ISH`")
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 2)
 
-        l = self.mw.export("name", "code=`ISHTEST`")
-        self.assertEqual(len(l), 1)
-        pprint(l)
-        self.assertEqual(l[0]['email'], "accounts@acme.com.au")
-        self.assertEqual(l[0]['name'], "ish")
+        data = self.mw.export("name", "code=`ISHTEST`")
+        self.assertEqual(len(data), 1)
+        pprint(data)
+        self.assertEqual(data[0]['email'], "accounts@acme.com.au")
+        self.assertEqual(data[0]['name'], "ish")
 
     def test_transaction(self):
-        t = Transaction()
+        t = moneyworks.Transaction()
         t.add("w")
         t.add("type", "CP")
         t.add("type_num", 99.2)
         t.add("d", date(2006, 6, 14))
-        for data in [1, 2]:
-            l = t.add_line()
-            l.add("empty")
-            l.add("detail.something", "value1")
-            l.add("detail.something2", 2)
+        for _ in [1, 2]:
+            data = t.add_line()
+            data.add("empty")
+            data.add("detail.something", "value1")
+            data.add("detail.something2", 2)
 
-        self.assertEqual('<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><d>20060614</d><type_num>99.2</type_num><type>CP</type><w work-it-out="true" /><subfile name="Detail"><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail><detail><detail.something2>2</detail.something2><detail.something>value1</detail.something><empty work-it-out="true" /></detail></subfile><gross work-it-out="true" /></transaction></table>' \
-            ,t.to_xml())
+        self.assertEqual(
+            '<?xml version="1.0"?><table count="1" found="1" name="Transaction" start="0"><transaction><d>20060614' +
+            '</d><type_num>99.2</type_num><type>CP</type><w work-it-out="true" /><subfile name="Detail"><detail>' +
+            '<detail.something2>2</detail.something2><detail.something>value1</detail.something>' +
+            '<empty work-it-out="true" /></detail><detail><detail.something2>2</detail.something2>' +
+            '<detail.something>value1</detail.something><empty work-it-out="true" /></detail></subfile>' +
+            '<gross work-it-out="true" /></transaction></table>',
+            t.to_xml())
 
 
 if __name__ == '__main__':
