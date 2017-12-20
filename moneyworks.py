@@ -1,23 +1,24 @@
 #!/usr/local/bin/python3
 
-from datetime import date
-import requests
-import urllib.request, urllib.parse, urllib.error
+import configparser
 import logging
-
+import smtplib
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import date
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE
-import smtplib
-
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
-import configparser
+import requests
+
 config = configparser.ConfigParser()
 config_data = config.read("mw.ini")
 if len(config_data) == 0:
-    raise ValueError, "Failed to open mw.ini configuration file."
+    raise ValueError("Failed to open mw.ini configuration file.")
 
 logging.basicConfig(format='%(message)s', level=logging.WARNING)
 
@@ -27,7 +28,8 @@ class Moneyworks:
     def __init__(self):
         self.base_url = "http://" + config.get('mw_server', 'HOST') + ":" + config.get('mw_server', 'PORT') + "/REST/"
         self.url = self.base_url + urllib.parse.quote_plus(config.get('mw_server', 'DATA_FILE')) + "/"
-        self.mw_auth = requests.auth.HTTPBasicAuth(config.get('mw_server', 'USERNAME'), config.get('mw_server', 'PASSWORD'))
+        self.mw_auth = requests.auth.HTTPBasicAuth(config.get('mw_server', 'USERNAME'),
+                                                   config.get('mw_server', 'PASSWORD'))
 
     def __get(self, path):
         r = requests.get(self.url + path, auth=self.mw_auth)
@@ -61,7 +63,7 @@ class Moneyworks:
         """
         logging.info(xml)
         seqnum = self.__post("import/return_seq=true", xml).text
-        logging.warn("Transaction created with id " + seqnum)
+        logging.warning("Transaction created with id " + seqnum)
         return seqnum
 
     def get_email(self, company_code):
@@ -69,7 +71,8 @@ class Moneyworks:
         Get the email address from Moneyworks for a particular company
         :return email address string
         """
-        return self.__get("export/table=name&search=" + urllib.parse.quote_plus("code=`" + company_code + "`") + "&format=[email]").text
+        return self.__get("export/table=name&search=" + urllib.parse.quote_plus("code=`" + company_code + "`") +
+                          "&format=[email]").text
 
     def print_transaction(self, search, form):
         """
@@ -87,7 +90,7 @@ class Moneyworks:
         Post the transaction in Moneyworks
         :param seqnum the invoice's sequence number (this is not the same as the invoice/PO number)
         """
-        logging.warn("Posting transaction " + seqnum)
+        logging.warning("Posting transaction " + seqnum)
         return self.__post("post/seqnum=" + seqnum, "").text
 
     def export(self, table, search):
@@ -143,9 +146,9 @@ class Transaction:
             self.properties[key] = str(value)
 
     def add_line(self):
-        l = TransactionLine()
-        self.lines.append(l)
-        return l
+        line = TransactionLine()
+        self.lines.append(line)
+        return line
 
     def to_xml(self):
         xml = Element("table", {"name": "Transaction", "count": "1", "start": "0", "found": "1"})
@@ -176,8 +179,8 @@ class Transaction:
     def __sort_properties(properties):
         """
         This constructs a tuple for each element in the list, if the value is None the tuple with be (True, None),
-        if the value is anything else it will be (False, x) (where x is the value). Since tuples are sorted item by item,
-        this means that all non-None elements will come first (since False < True), and then be sorted by value.
+        if the value is anything else it will be (False, x) (where x is the value). Since tuples are sorted item by
+        item, this means that all non-None elements will come first (since False < True), and then be sorted by value.
         """
         return sorted(list(properties.items()), key=lambda x: (x[1] is None, x[1]))
 
