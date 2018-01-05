@@ -171,7 +171,7 @@ class Transaction:
 
         # hardcode in gross to appear at the end since MW requires it
         SubElement(transaction, "gross", {"work-it-out": "true"})
-        output = '<?xml version="1.0"?>' + tostring(xml)
+        output = '<?xml version="1.0"?>' + tostring(xml, encoding="unicode")
         logging.info(output)
         return output
 
