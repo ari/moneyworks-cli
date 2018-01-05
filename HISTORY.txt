@@ -1,0 +1,4 @@
+version 1.0 (24 Dec 2017)
+-----------
+
+Upgrade library to python 3 and release to PyPI.
