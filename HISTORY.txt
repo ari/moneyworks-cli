@@ -1,6 +1,6 @@
-# version 1.0.1 (31 Jan 2018)
+# version 1.0.4 (31 Jan 2018)
 
-Rename package to moneyworks
+Rename package to moneyworks and fix some pip packaging issues.
 
 
 # version 1.0 (24 Dec 2017)

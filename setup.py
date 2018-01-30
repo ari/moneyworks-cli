@@ -2,13 +2,15 @@ from setuptools import setup
 
 setup(
     name='moneyworks',
-    version='1.0.1',
+    version='1.0.4',
     description='A python API for Cognito Moneyworks accounting software',
     long_description='A python API for Cognito Moneyworks accounting software',
     url='http://github.com/ari/moneyworks-cli/',
 
     author='Aristedes Maniatis',
     author_email='ari@ish.com.au',
+
+    license="APL2",
 
     # Classifiers help users find your project by categorizing it.
     #
@@ -30,6 +32,7 @@ setup(
 
     keywords='api moneyworks accounting',
 
-    py_modules=["moneyworks"],
+    data_files = [("", ["LICENSE"])],
+    packages=["moneyworks"],
     install_requires=['requests']
 )

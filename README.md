@@ -13,13 +13,15 @@ A library for python to make it easier to export, import and print data from Mon
 
 Cognito Moneyworks with an available REST user enabled on a port of your choice. We have only tested this library with Moneyworks Server, but it may work with the standalone version.
 
-You'll need python 2.7 or above.
+You'll need python 3.5 or above.
 
 # Installing
 
-At the moment, this library isn't distributed with pip. You'll just need to copy moneyworks.py into your project folder.
+Install with pip.
 
-Edit the mw.ini file to your needs. Set the IP address, password and so on. You'll also need to ensure this user is given appropriate rights inside Moneyworks. Unfortunately due to limitations in Moneyworks, if you try this library with a user who doesn't have sufficient rights, random things happen. For example, printing an unposted invoice from a user without that right results in a blank PDF but no error. In other cases unhelpful 500 errors are returned without any information.
+    pip install moneyworks
+
+Copy the mw.ini file to your local folder and edit to you needs. You'll also need to ensure this user is given appropriate rights inside Moneyworks. Unfortunately due to limitations in Moneyworks, if you try this library with a user who doesn't have sufficient rights, random things happen. For example, printing an unposted invoice from a user without that right results in a blank PDF but no error. In other cases unhelpful 500 errors are returned without any information.
 
 # How to use
 
@@ -86,5 +88,6 @@ This library is licensed under the Apache Public License 2. Contributions and en
 
 In order to publish a new version of this module, edit setup.py with the new version number then run:
 
-    python3.6 setup.py bdist_wheel
+    python3.6 setup.py sdist
     twine upload dist/*
+    rm -fr dist/*
