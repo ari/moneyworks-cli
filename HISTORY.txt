@@ -1,4 +1,8 @@
-version 1.0 (24 Dec 2017)
------------
+# version 1.0.1 (31 Jan 2018)
+
+Rename package to moneyworks
+
+
+# version 1.0 (24 Dec 2017)
 
 Upgrade library to python 3 and release to PyPI.

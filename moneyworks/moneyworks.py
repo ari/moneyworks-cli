@@ -1,24 +1,13 @@
-#!/usr/local/bin/python3
+#!python3
 
 import configparser
 import logging
-import smtplib
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date
-from email.mime.application import MIMEApplication
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import COMMASPACE
-from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
-
+from xml.etree.ElementTree import fromstring
 import requests
-
-config = configparser.ConfigParser()
-config_data = config.read("mw.ini")
-if len(config_data) == 0:
-    raise ValueError("Failed to open mw.ini configuration file.")
+from requests.auth import HTTPBasicAuth
 
 logging.basicConfig(format='%(message)s', level=logging.WARNING)
 
@@ -26,10 +15,15 @@ logging.basicConfig(format='%(message)s', level=logging.WARNING)
 class Moneyworks:
 
     def __init__(self):
+        config = configparser.ConfigParser()
+        config_data = config.read("mw.ini")
+        if len(config_data) == 0:
+            raise ValueError("Failed to open mw.ini configuration file.")
+
         self.base_url = "http://" + config.get('mw_server', 'HOST') + ":" + config.get('mw_server', 'PORT') + "/REST/"
         self.url = self.base_url + urllib.parse.quote_plus(config.get('mw_server', 'DATA_FILE')) + "/"
-        self.mw_auth = requests.auth.HTTPBasicAuth(config.get('mw_server', 'USERNAME'),
-                                                   config.get('mw_server', 'PASSWORD'))
+        self.mw_auth = HTTPBasicAuth(config.get('mw_server', 'USERNAME'),
+                                     config.get('mw_server', 'PASSWORD'))
 
     def __get(self, path):
         r = requests.get(self.url + path, auth=self.mw_auth)
@@ -129,108 +123,3 @@ class Moneyworks:
             path = path + "&sort=" + urllib.parse.quote_plus(sort)
 
         return self.__get(path).text
-
-
-class Transaction:
-
-    def __init__(self):
-        self.properties = {}
-        self.lines = []
-
-    def add(self, key, value=None):
-        if value is None:
-            self.properties[key] = None
-        elif isinstance(value, date):
-            self.properties[key] = value.strftime("%Y%m%d")
-        else:
-            self.properties[key] = str(value)
-
-    def add_line(self):
-        line = TransactionLine()
-        self.lines.append(line)
-        return line
-
-    def to_xml(self):
-        xml = Element("table", {"name": "Transaction", "count": "1", "start": "0", "found": "1"})
-        transaction = SubElement(xml, "transaction")
-        for key, value in self.__sort_properties(self.properties):
-            if value is None:
-                SubElement(transaction, key, {"work-it-out": "true"})
-            else:
-                SubElement(transaction, key).text = value
-
-        if len(self.lines) > 0:
-            subfile = SubElement(transaction, "subfile", {"name": "Detail"})
-            for line in self.lines:
-                detail = SubElement(subfile, "detail")
-                for key, value in self.__sort_properties(line.properties):
-                    if value is None:
-                        SubElement(detail, key, {"work-it-out": "true"})
-                    else:
-                        SubElement(detail, key).text = value
-
-        # hardcode in gross to appear at the end since MW requires it
-        SubElement(transaction, "gross", {"work-it-out": "true"})
-        output = '<?xml version="1.0"?>' + tostring(xml, encoding="unicode")
-        logging.info(output)
-        return output
-
-    @staticmethod
-    def __sort_properties(properties):
-        """
-        This constructs a tuple for each element in the list, if the value is None the tuple with be (True, None),
-        if the value is anything else it will be (False, x) (where x is the value). Since tuples are sorted item by
-        item, this means that all non-None elements will come first (since False < True), and then be sorted by value.
-        """
-        return sorted(list(properties.items()), key=lambda x: (x[1] is None, x[1]))
-
-
-class TransactionLine:
-    def __init__(self):
-        self.properties = {}
-
-    def add(self, key, value=None):
-        if value is None:
-            self.properties[key] = None
-        elif isinstance(value, date):
-            self.properties[key] = value.strftime("%Y%m%d")
-        else:
-            self.properties[key] = str(value)
-
-
-class Email:
-
-    def __init__(self):
-        self.mx = config.get('mail', 'MX')
-        self.send_from = config.get('mail', 'SEND_FROM')
-        assert isinstance(self.mx, str)
-        assert isinstance(self.send_from, str)
-
-    def send_mail(self, send_to, subject, text, attachment=None, attachment_name="document.pdf"):
-        """
-        Send an email, optionally with an attachment. ALthough strictly not part of Moneyworks, this is a useful utility
-        method to have here because you very often need to send reports by email
-        :param send_to: an array of email addresses to send to, or just a single string for one address
-        :param subject: the subject of the email
-        :param text: the body of the email. Currently only plain text body is supported.
-        :param attachment: an optional bytearray which is the PDF file you want to send
-        :param attachment_name: if you pass an attachment, then give it a name
-        """
-        assert isinstance(subject, str)
-
-        msg = MIMEMultipart()
-        msg["Subject"] = subject
-        msg["From"] = self.send_from
-        msg["To"] = COMMASPACE.join(send_to) if isinstance(send_to, list) else send_to
-
-        msg.attach(MIMEText(text))
-
-        if attachment:
-            assert isinstance(attachment, bytes)
-            a = MIMEApplication(attachment, 'pdf')
-            a.add_header('Content-Disposition', 'attachment; filename=\"{0}\"'.format(attachment_name))
-            msg.attach(a)
-
-        smtp = smtplib.SMTP(self.mx)
-        smtp.sendmail(self.send_from, send_to, msg.as_string())
-        smtp.quit()

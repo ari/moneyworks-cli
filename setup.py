@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(
-    name='moneywork-cli',
-    version='1.0.0',
+    name='moneyworks',
+    version='1.0.1',
     description='A python API for Cognito Moneyworks accounting software',
     long_description='A python API for Cognito Moneyworks accounting software',
     url='http://github.com/ari/moneyworks-cli/',
