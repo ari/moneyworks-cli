@@ -81,3 +81,10 @@ Let's see how we might import some data, generate invoices, post them, print an 
 # License
 
 This library is licensed under the Apache Public License 2. Contributions and enhancements are welcome.
+
+# For developers
+
+In order to publish a new version of this module, edit setup.py with the new version number then run:
+
+    python3.6 setup.py bdist_wheel
+    twine upload dist/*
