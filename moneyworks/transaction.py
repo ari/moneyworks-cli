@@ -1,11 +1,7 @@
 #!python3
 
-import logging
 from datetime import date
 from xml.etree.ElementTree import Element, SubElement, tostring
-
-logging.basicConfig(format='%(message)s', level=logging.WARNING)
-
 
 class Transaction:
 
@@ -48,7 +44,6 @@ class Transaction:
         # hardcode in gross to appear at the end since MW requires it
         SubElement(transaction, "gross", {"work-it-out": "true"})
         output = '<?xml version="1.0"?>' + tostring(xml, encoding="unicode")
-        logging.info(output)
         return output
 
     @staticmethod

@@ -1,15 +1,12 @@
 #!python3
 
 import configparser
-import logging
 import urllib.error
 import urllib.parse
 import urllib.request
 from xml.etree.ElementTree import fromstring
 import requests
 from requests.auth import HTTPBasicAuth
-
-logging.basicConfig(format='%(message)s', level=logging.WARNING)
 
 
 class Moneyworks:
@@ -55,9 +52,7 @@ class Moneyworks:
         :param xml: the XML data fragment for this transaction
         :return sequence number of the record created
         """
-        logging.info(xml)
         seqnum = self.__post("import/return_seq=true", xml).text
-        logging.warning("Transaction created with id " + seqnum)
         return seqnum
 
     def get_email(self, company_code):
@@ -76,7 +71,6 @@ class Moneyworks:
         :return the pdf file as bytes
         """
         r = self.__get("doform/form=" + form + "&search=" + urllib.parse.quote_plus(search))
-        logging.debug(r.headers)
         return r.content
 
     def post_transaction(self, seqnum):
@@ -84,7 +78,6 @@ class Moneyworks:
         Post the transaction in Moneyworks
         :param seqnum the invoice's sequence number (this is not the same as the invoice/PO number)
         """
-        logging.warning("Posting transaction " + seqnum)
         return self.__post("post/seqnum=" + seqnum, "").text
 
     def export(self, table, search):
@@ -96,7 +89,6 @@ class Moneyworks:
         """
         path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search) + "&format=xml-verbose"
         xml = self.__get(path).text
-        logging.debug("XML retrieved " + xml)
 
         result = []
         for record in fromstring(xml).findall(table):

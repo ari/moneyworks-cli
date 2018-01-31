@@ -1,3 +1,7 @@
+# version 1.0.5 (1 Feb 2018)
+
+Remove logging since it interferes with this library being used in salt
+
 # version 1.0.4 (31 Jan 2018)
 
 Rename package to moneyworks and fix some pip packaging issues.
