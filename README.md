@@ -48,7 +48,7 @@ Let's see how we might import some data, generate invoices, post them, print an 
 
     from moneyworks import Moneyworks, Transaction, Email
 
-    mw = Moneyworks()
+    mw = Moneyworks('/etc/mw.ini')
     e = Email()
 
     t = Transaction()

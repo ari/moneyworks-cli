@@ -1,3 +1,7 @@
+# version 1.0.6 (5 Feb 2018)
+
+Allow user to specify path to mw.ini file
+
 # version 1.0.5 (1 Feb 2018)
 
 Remove logging since it interferes with this library being used in salt
