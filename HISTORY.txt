@@ -1,3 +1,7 @@
+# version 1.0.7 (8 Feb 2018)
+
+We also need a path to mw.ini file for the Email module
+
 # version 1.0.6 (5 Feb 2018)
 
 Allow user to specify path to mw.ini file
