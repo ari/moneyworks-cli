@@ -7,9 +7,12 @@ from email.mime.multipart import MIMEMultipart
 
 class Email:
 
-    def __init__(self):
+    def __init__(self，path):
+        if path is None:
+            path = 'mw.ini'
+
         config = configparser.ConfigParser()
-        config_data = config.read("mw.ini")
+        config_data = config.read(path)
         if len(config_data) == 0:
             raise ValueError("Failed to open mw.ini configuration file.")
 
