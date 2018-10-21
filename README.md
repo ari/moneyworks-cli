@@ -88,6 +88,6 @@ This library is licensed under the Apache Public License 2. Contributions and en
 
 In order to publish a new version of this module, edit setup.py with the new version number then run:
 
-    python3.6 setup.py sdist
-    twine upload dist/*
     rm -fr dist/*
+    python3 setup.py sdist
+    twine upload dist/*

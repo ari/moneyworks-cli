@@ -4,7 +4,8 @@ import configparser
 import urllib.error
 import urllib.parse
 import urllib.request
-from xml.etree.ElementTree import fromstring
+import xml.etree.ElementTree as XML
+
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -83,18 +84,31 @@ class Moneyworks:
         """
         return self.__post("post/seqnum=" + seqnum, "").text
 
-    def export(self, table, search):
+    def export(self, table, search, format=None, sort=None):
         """
         Extract data from Moneyworks
         :param table: The table from which we want to get data eg. "name"
-        :param search: A search string, eg. "DBalance>0"
-        :return A list of records, each as a dict of record attributes
+        :param search: A search string, eg. "DBalance>0". Put string constants between `backticks`
+        :param format: a format for the returned data eg. "[code] [email] [DBalance]," or "xml". If nothing is passed then return a dict.
+        :param sort: an optional sort expression
+        :return A list of records or data formatted as per 'format'
         """
-        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search) + "&format=xml-verbose"
-        xml = self.__get(path).text
 
+        table = table.lower()
+        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search)
+
+        if sort:
+            path = path + "&sort=" + urllib.parse.quote_plus(sort)
+
+        if format:
+            path += "&format=" + format
+            return self.__get(path).text
+
+        path += "&format=xml-verbose"
+        xml = self.__get(path).text
         result = []
-        for record in fromstring(xml).findall(table):
+
+        for record in XML.fromstring(xml).findall(table):
             r = dict()
             result.append(r)
             for e in record:
@@ -102,19 +116,17 @@ class Moneyworks:
 
         return result
 
-    def export_with_format(self, table, search, format_string, sort=None):
+    def export_one(self, table, search, sort=None):
         """
-        Extract data from Moneyworks
+        Extract a single record from Moneyworks. If more than one record is returned, then just get the first
         :param table: The table from which we want to get data eg. "name"
-        :param search: A search string, eg. "DBalance>0"
-        :param format_string: a format for the returned data eg. "[code] [email] [DBalance]," or "xml"
+        :param search: A search string, eg. "DBalance>0". Put string constants between `backticks`
         :param sort: an optional sort expression
+        :return A single record dict
         """
-        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search)
-        if format_string:
-            path = path + "&format=" + urllib.parse.quote_plus(format_string)
 
-        if sort:
-            path = path + "&sort=" + urllib.parse.quote_plus(sort)
+        data = self.export(table, search, sort=sort)
+        if len(data) == 0:
+            return None
 
-        return self.__get(path).text
+        return data[0]

@@ -1,3 +1,8 @@
+# version 1.1.0 (21 October 2018)
+
+* Remove Moneyworks.export_with_format. You can now just use Moneyworks.export with the format param.
+* Ensure table names are lowercase (otherwise parsing the XML result breaks)
+
 # version 1.0.7 (8 Feb 2018)
 
 We also need a path to mw.ini file for the Email module
