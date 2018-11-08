@@ -19,7 +19,7 @@ class Moneyworks:
         config = configparser.ConfigParser()
         config_data = config.read(path)
         if len(config_data) == 0:
-            raise ValueError("Failed to open mw.ini configuration file.")
+            raise ValueError("Failed to open mw.ini configuration file at %s." % path)
 
         self.base_url = "http://" + config.get('mw_server', 'HOST') + ":" + config.get('mw_server', 'PORT') + "/REST/"
         self.url = self.base_url + urllib.parse.quote_plus(config.get('mw_server', 'DATA_FILE')) + "/"
