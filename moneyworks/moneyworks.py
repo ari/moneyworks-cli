@@ -12,7 +12,7 @@ from requests.auth import HTTPBasicAuth
 
 class Moneyworks:
 
-    def __init__(self, path):
+    def __init__(self, path=None):
         if path is None:
             path = 'mw.ini'
 
