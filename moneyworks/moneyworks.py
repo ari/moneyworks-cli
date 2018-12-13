@@ -84,7 +84,7 @@ class Moneyworks:
         """
         return self.__post("post/seqnum=" + seqnum, "").text
 
-    def export(self, table, search, format=None, sort=None):
+    def export(self, table, search, format=None, sort=None, direction='ascending'):
         """
         Extract data from Moneyworks
         :param table: The table from which we want to get data eg. "name"
@@ -95,7 +95,9 @@ class Moneyworks:
         """
 
         table = table.lower()
-        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search)
+        if direction != 'ascending':
+            direction = 'descending'
+        path = "export/table=" + table + "&search=" + urllib.parse.quote_plus(search) + "&direction=" + direction
 
         if sort:
             path = path + "&sort=" + urllib.parse.quote_plus(sort)
@@ -116,7 +118,7 @@ class Moneyworks:
 
         return result
 
-    def export_one(self, table, search, sort=None):
+    def export_one(self, table, search, sort=None, direction='ascending'):
         """
         Extract a single record from Moneyworks. If more than one record is returned, then just get the first
         :param table: The table from which we want to get data eg. "name"
@@ -125,7 +127,7 @@ class Moneyworks:
         :return A single record dict
         """
 
-        data = self.export(table, search, sort=sort)
+        data = self.export(table, search, sort=sort, direction=direction)
         if len(data) == 0:
             return None
 
