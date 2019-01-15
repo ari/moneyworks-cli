@@ -1,6 +1,7 @@
 #!python3
 
 import configparser
+from datetime import datetime
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -109,14 +110,33 @@ class Moneyworks:
         path += "&format=xml-verbose"
         xml = self.__get(path).text
         result = []
-
         for record in XML.fromstring(xml).findall(table):
-            r = dict()
-            result.append(r)
-            for e in record:
-                r[e.tag] = e.text
+            result.append(self._build_dict(record))
 
         return result
+
+    def _build_dict(self, record):
+        r = {}
+        for e in record:
+            if e.tag == "subfile":
+                subfile = []
+                r[e.attrib['name'] + 's'] = subfile
+                for sub in e:
+                    subfile.append(self._build_dict(sub))
+
+            elif e.tag.endswith('date'):
+                r[e.tag] = datetime.strptime(e.text, '%Y%m%d').date()
+            elif e.tag.endswith('time'):
+                r[e.tag] = datetime.strptime(e.text, '%Y%m%d%H%M%S')
+            else:
+                try:
+                    r[e.tag] = int(e.text)
+                except:
+                    try:
+                        r[e.tag] = float(e.text)
+                    except:
+                        r[e.tag] = e.text
+        return r
 
     def export_one(self, table, search, sort=None, direction='ascending'):
         """

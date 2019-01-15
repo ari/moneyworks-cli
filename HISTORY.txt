@@ -1,3 +1,8 @@
+# version 1.2.0 (15 January 2019)
+
+* export method now returns two level nested dict for transactions & detail
+* export method now return float/int types where appropriate
+
 # version 1.1.0 (21 October 2018)
 
 * Remove Moneyworks.export_with_format. You can now just use Moneyworks.export with the format param.
